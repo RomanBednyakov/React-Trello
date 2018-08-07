@@ -5,14 +5,20 @@ import {
   GET_LISTS_START,
   MOVE_CARD,
   MOVE_LIST,
-  TOGGLE_DRAGGING
+  TOGGLE_DRAGGING,
+  REDIRECT_HOME,
+  REDIRECT_LOGIN,
+  ERROR_LOGIN,
 } from '../actions/lists';
 
 /* eslint-disable new-cap */
 const InitialState = Record({
   isFetching: false,
   lists: [],
-  isDragging: false
+  isDragging: false,
+  redirectHome: false,
+  errorLogin: false,
+  redirectLogin: false,
 });
 /* eslint-enable new-cap */
 const initialState = new InitialState;
@@ -55,6 +61,15 @@ export default function lists(state = initialState, action) {
     }
     case TOGGLE_DRAGGING: {
       return state.set('isDragging', action.isDragging);
+    }
+    case REDIRECT_HOME: {
+      return state.set('redirectHome', action.redirectHome);
+    }
+    case REDIRECT_LOGIN: {
+      return state.set('redirectLogin', action.redirectLogin);
+    }
+    case ERROR_LOGIN: {
+      return state.set('errorLogin', action.errorLogin);
     }
     default:
       return state;

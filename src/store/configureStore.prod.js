@@ -1,11 +1,12 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import { routerMiddleware } from 'react-router-redux';
-import { browserHistory } from 'react-router';
+// import { browserHistory } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
 import rootReducer from '../reducers';
 
-const reduxRouterMiddleware = routerMiddleware(browserHistory);
+const reduxRouterMiddleware = routerMiddleware(createBrowserHistory());
 const middleware = [
   reduxRouterMiddleware,
   thunk,

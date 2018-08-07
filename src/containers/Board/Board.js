@@ -8,6 +8,7 @@ import * as ListsActions from '../../actions/lists';
 
 import CardsContainer from './Cards/CardsContainer';
 import CustomDragLayer from './CustomDragLayer';
+import { Link, Redirect } from 'react-router-dom';
 
 function mapStateToProps(state) {
   return {
@@ -24,6 +25,7 @@ function mapDispatchToProps(dispatch) {
 export default class Board extends Component {
   static propTypes = {
     getLists: PropTypes.func.isRequired,
+    homeRedirect: PropTypes.func.isRequired,
     moveCard: PropTypes.func.isRequired,
     moveList: PropTypes.func.isRequired,
     lists: PropTypes.array.isRequired,
@@ -38,6 +40,7 @@ export default class Board extends Component {
     this.scrollLeft = this.scrollLeft.bind(this);
     this.stopScrolling = this.stopScrolling.bind(this);
     this.startScrolling = this.startScrolling.bind(this);
+    this.changeRedirectState = this.changeRedirectState.bind(this);
     this.state = { isScrolling: false };
   }
 
@@ -122,12 +125,23 @@ export default class Board extends Component {
       lastX: lists.indexOf(list)
     };
   }
+  changeRedirectState() {
+    this.props.homeRedirect();
+  }
 
   render() {
     const { lists } = this.props;
+    const loginPage =
+      localStorage.getItem('token') === null || localStorage.getItem('token') === undefined
+      ? <Redirect to="/login" /> : null;
     return (
-      <div style={{ height: '100%' }}>
-        <div>SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS</div>
+      <main>
+        <header className="header">
+          <button className="header_boards">boards</button>
+          <Link
+            onClick={this.changeRedirectState} href="../Login/index.js" to="/login"
+          >Logout</Link>
+        </header>
 
         <CustomDragLayer snapToGrid={false} />
         {lists.map((item, i) =>
@@ -143,7 +157,8 @@ export default class Board extends Component {
             x={i}
           />
         )}
-      </div>
+        {loginPage}
+      </main>
     );
   }
 }
