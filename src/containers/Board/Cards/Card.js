@@ -7,13 +7,12 @@ const propTypes = {
 
 const Card = (props) => {
   const { style, item } = props;
-
   return (
-    <div style={style} className="item" id={style ? item.id : null}>
+    <div style={style} className="item" id={style ? item.card_id : null}>
       <div className="item-name">{item.title}</div>
       <div className="item-container">
         <div className="item-content">
-          <p>{`${item.content}`}</p>
+          <p>{`${item.content_card}`}</p>
         </div>
       </div>
     </div>

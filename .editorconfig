@@ -1,4 +1,7 @@
 # editorconfig.org
+We are very happy for any input and potential contributions for this project.
+
+Firstly raise an issue. Then if you are assigned to that issue fork the repo, make your edits and make a pull request.
 root = true
 
 [*]

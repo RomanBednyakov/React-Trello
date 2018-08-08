@@ -8,14 +8,17 @@ import * as ListsActions from '../../actions/lists';
 
 import CardsContainer from './Cards/CardsContainer';
 import CustomDragLayer from './CustomDragLayer';
+import BoardForm from './BoardList/BoardForm';
+import BardList from './BoardList/BardList';
 import { Link, Redirect } from 'react-router-dom';
 
 function mapStateToProps(state) {
   return {
-    lists: state.lists.lists
+    lists: state.lists.lists,
+    activeBoard: state.lists.activeBoard,
   };
 }
-
+const logo = require('../../assets/images/trello-logo-blue.png');
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(ListsActions, dispatch);
 }
@@ -29,6 +32,7 @@ export default class Board extends Component {
     moveCard: PropTypes.func.isRequired,
     moveList: PropTypes.func.isRequired,
     lists: PropTypes.array.isRequired,
+    activeBoard: PropTypes.string.isRequired || PropTypes.number.isRequired,
   };
 
   constructor(props) {
@@ -41,11 +45,10 @@ export default class Board extends Component {
     this.stopScrolling = this.stopScrolling.bind(this);
     this.startScrolling = this.startScrolling.bind(this);
     this.changeRedirectState = this.changeRedirectState.bind(this);
-    this.state = { isScrolling: false };
-  }
-
-  componentWillMount() {
-    this.props.getLists(2);
+    this.state = {
+      isScrolling: false,
+      isHovering: false,
+    };
   }
 
   startScrolling(direction) {
@@ -82,21 +85,25 @@ export default class Board extends Component {
   }
 
   moveCard(lastX, lastY, nextX, nextY, idCard) {
+    console.log(1111111);
     this.props.moveCard(lastX, lastY, nextX, nextY, idCard);
     const { lists } = this.props;
     lists.map((listsItem, i) => {
       if (i === nextX) {
         listsItem.cards.map((item, index) => {
           const newItem = item;
-          if (item.id === idCard) {
-            if (index === 0) {
-              newItem.pos = 65535;
+          if (item.card_id === idCard) {
+            if (index === 0 && listsItem.cards[index + 1] === undefined) {
+              newItem.pos_card = 65535;
             } else if (listsItem.cards[index + 1] === undefined) {
-              newItem.pos = listsItem.cards[index - 1].pos * 2;
+              newItem.pos_card = listsItem.cards[index - 1].pos_card * 2;
+            } else if (index === 0 && listsItem.cards[index + 1] !== undefined) {
+              newItem.pos_card = listsItem.cards[index + 1].pos_card / 2;
             } else {
-              newItem.pos = (listsItem.cards[index - 1].pos + listsItem.cards[index + 1].pos) / 2;
+              newItem.pos_card =
+                (listsItem.cards[index - 1].pos_card + listsItem.cards[index + 1].pos_card) / 2;
             }
-            newItem.column_id = listsItem.id;
+            newItem.column_id = listsItem.card_id;
           }
           return newItem;
         });
@@ -106,13 +113,15 @@ export default class Board extends Component {
   }
 
   moveList(listId, nextX) {
+    console.log(222);
     const { lastX } = this.findList(listId, nextX);
     this.props.moveList(lastX, nextX);
   }
 
   findList(id, nextX) {
+    console.log(3333);
     const { lists } = this.props;
-    const list = lists.filter(l => l.id === id)[0];
+    const list = lists.filter(l => l.column_id === id)[0];
     if (nextX === 0) {
       list.pos = lists[nextX].pos / 2;
     } else if (lists[nextX + 1] === undefined) {
@@ -126,28 +135,23 @@ export default class Board extends Component {
     };
   }
   changeRedirectState() {
+    localStorage.removeItem('token');
     this.props.homeRedirect();
   }
 
   render() {
-    const { lists } = this.props;
+    const { lists, activeBoard } = this.props;
     const loginPage =
       localStorage.getItem('token') === null || localStorage.getItem('token') === undefined
-      ? <Redirect to="/login" /> : null;
-    return (
-      <main>
-        <header className="header">
-          <button className="header_boards">boards</button>
-          <Link
-            onClick={this.changeRedirectState} href="../Login/index.js" to="/login"
-          >Logout</Link>
-        </header>
+        ? <Redirect to="/login" /> : null;
 
+    const content = activeBoard ?
+      <main>
         <CustomDragLayer snapToGrid={false} />
         {lists.map((item, i) =>
           <CardsContainer
-            key={item.id}
-            id={item.id}
+            key={item.column_id}
+            id={item.column_id}
             item={item}
             moveCard={this.moveCard}
             moveList={this.moveList}
@@ -157,8 +161,25 @@ export default class Board extends Component {
             x={i}
           />
         )}
-        {loginPage}
+        <div className="add_column">
+          <BoardForm add={'column'} position={65535} id={this.props.lists.length} />
+        </div>
       </main>
+      : null;
+    return (
+      <div className="content">
+        <div className="header">
+          <BardList />
+          <a className="header_logo"><img src={logo} alt="Delete perfomers" /></a>
+          <Link
+            onClick={this.changeRedirectState}
+            href="../login/login.js" to="/login"
+            className="button"
+          >Logout</Link>
+        </div>
+        {content}
+        {loginPage}
+      </div>
     );
   }
 }

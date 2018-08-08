@@ -19,7 +19,6 @@ function mapDispatchToProps(dispatch) {
 export default class Registration extends Component {
   static propTypes = {
     registration: PropTypes.func.isRequired,
-    // redirect: PropTypes.func.isRequired,
     redirectLogin: PropTypes.bool.isRequired,
   };
   constructor(props) {
@@ -37,10 +36,6 @@ export default class Registration extends Component {
     event.preventDefault();
     const { login, password } = this.state;
     this.props.registration(login, password);
-    // this.setState({
-    //   login: '',
-    //   password: '',
-    // });
   }
   handleLogin(event) {
     this.setState({ ...this.state, login: event.target.value });
@@ -48,14 +43,8 @@ export default class Registration extends Component {
   handlePassword(event) {
     this.setState({ ...this.state, password: event.target.value });
   }
-  // changeRedirectState() {
-  //   this.props.loginRedirect();
-  // }
   render() {
     const loginPage = this.props.redirectLogin ? <Redirect to="/login" /> : null;
-    // if (this.state.redirect) {
-    //   this.changeStateRedirect(false);
-    // }
     return (
       <div>
         <h1>Registration</h1>

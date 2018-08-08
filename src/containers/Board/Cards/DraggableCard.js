@@ -22,11 +22,11 @@ const cardSource = {
     return { id, title, item, x, y, clientWidth, clientHeight };
   },
   endDrag(props, monitor) {
-    document.getElementById(monitor.getItem().id).style.display = 'block';
+    document.getElementById(monitor.getItem().item.card_id).style.display = 'block';
     props.stopScrolling();
   },
   isDragging(props, monitor) {
-    const isDragging = props.item && props.item.id === monitor.getItem().id;
+    const isDragging = props.item && props.item.card_id === monitor.getItem().item.card_id;
     return isDragging;
   }
 };
@@ -35,6 +35,7 @@ const cardSource = {
 const OPTIONS = {
   arePropsEqual: function arePropsEqual(props, otherProps) {
     let isEqual = true;
+    console.log(props);
     if (props.item.id === otherProps.item.id &&
         props.x === otherProps.x &&
         props.y === otherProps.y
@@ -65,7 +66,7 @@ export default class CardComponent extends Component {
     x: PropTypes.number.isRequired,
     y: PropTypes.number,
     stopScrolling: PropTypes.func
-  }
+  };
 
   componentDidMount() {
     this.props.connectDragPreview(getEmptyImage(), {

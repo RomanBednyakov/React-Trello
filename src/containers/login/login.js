@@ -68,13 +68,15 @@ export default class Login extends Component {
             placeholder="password"
             onChange={this.handlePassword}
           />
-          <button onClick={this.handleSubmit}>login</button>
+          <a className="button" onClick={this.handleSubmit}>login</a>
         </form>
         {this.props.errorLogin ? <div>Wrong login or password</div> : ''}
         {homePage}
         <h3>
           <Link
-            onClick={this.changeRedirectState} href="../Registration/index.js" to="/registration"
+            onClick={this.changeRedirectState}
+            href="../registration/registration.js" to="/registration"
+            className="button"
           >
             Go to registration
           </Link>

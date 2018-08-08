@@ -3,6 +3,7 @@ import { DropTarget } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 
 import Card from './DraggableCard';
+import BoardForm from '../BoardList/BoardForm';
 import { CARD_HEIGHT, CARD_MARGIN, OFFSET_HEIGHT } from '../../../constants.js';
 
 
@@ -20,12 +21,12 @@ function getPlaceholderIndex(y, scrollY) {
 
 const specs = {
   drop(props, monitor, component) {
-    document.getElementById(monitor.getItem().id).style.display = 'block';
+    document.getElementById(monitor.getItem().item.card_id).style.display = 'block';
     const { placeholderIndex } = component.state;
     const lastX = monitor.getItem().x;
     const lastY = monitor.getItem().y;
     const nextX = props.x;
-    const idCard = monitor.getItem().id;
+    const idCard = monitor.getItem().item.card_id;
     let nextY = placeholderIndex;
 
     if (lastY > nextY) { // move top
@@ -37,6 +38,8 @@ const specs = {
     if (lastX === nextX && lastY === nextY) { // if position equel
       return;
     }
+    console.log(lastX, lastY, nextX, nextY, idCard);
+    console.log(props);
     props.moveCard(lastX, lastY, nextX, nextY, idCard);
   },
   hover(props, monitor, component) {
@@ -71,7 +74,7 @@ const specs = {
 
     // when drag begins, we hide the card and only display cardDragPreview
     const item = monitor.getItem();
-    document.getElementById(item.id).style.display = 'none';
+    document.getElementById(item.item.card_id).style.display = 'none';
   }
 };
 
@@ -93,8 +96,9 @@ export default class Cards extends Component {
     canDrop: PropTypes.bool,
     startScrolling: PropTypes.func,
     stopScrolling: PropTypes.func,
-    isScrolling: PropTypes.bool
-  }
+    isScrolling: PropTypes.bool,
+    column_id: PropTypes.number
+  };
 
   constructor(props) {
     super(props);
@@ -107,9 +111,12 @@ export default class Cards extends Component {
   render() {
     const { connectDropTarget, x, cards, isOver, canDrop } = this.props;
     const { placeholderIndex } = this.state;
-
     let isPlaceHold = false;
     let cardList = [];
+    let lastItemPosition = 65535;
+    if (cards.length > 0) {
+      lastItemPosition = this.props.cards[this.props.cards.length - 1].pos_card * 2;
+    }
     cards.forEach((item, i) => {
       if (isOver && canDrop) {
         isPlaceHold = false;
@@ -123,7 +130,7 @@ export default class Cards extends Component {
         cardList.push(
           <Card x={x} y={i}
             item={item}
-            key={item.id}
+            key={item.card_id}
             stopScrolling={this.props.stopScrolling}
           />
         );
@@ -145,6 +152,7 @@ export default class Cards extends Component {
     return connectDropTarget(
       <div className="desk-items">
         {cardList}
+        <BoardForm add={'cards'} id={this.props.column_id} position={lastItemPosition} />
       </div>
     );
   }

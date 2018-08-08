@@ -9,16 +9,20 @@ import {
   REDIRECT_HOME,
   REDIRECT_LOGIN,
   ERROR_LOGIN,
+  GET_BOARDS,
+  DELETE_BOARDS,
 } from '../actions/lists';
 
 /* eslint-disable new-cap */
 const InitialState = Record({
   isFetching: false,
   lists: [],
+  boards: [],
   isDragging: false,
   redirectHome: false,
   errorLogin: false,
   redirectLogin: false,
+  activeBoard: '',
 });
 /* eslint-enable new-cap */
 const initialState = new InitialState;
@@ -31,7 +35,8 @@ export default function lists(state = initialState, action) {
     case GET_LISTS:
       return state.withMutations((ctx) => {
         ctx.set('isFetching', false)
-            .set('lists', action.lists);
+            .set('lists', action.lists)
+              .set('activeBoard', action.activeBoard);
       });
     case MOVE_CARD: {
       const newLists = [...state.lists];
@@ -71,6 +76,14 @@ export default function lists(state = initialState, action) {
     case ERROR_LOGIN: {
       return state.set('errorLogin', action.errorLogin);
     }
+    case GET_BOARDS: {
+      return state.set('boards', action.boards);
+    }
+    case DELETE_BOARDS:
+      return state.withMutations((ctx) => {
+        ctx.set('boards', action.boards)
+          .set('activeBoard', action.activeBoard);
+      });
     default:
       return state;
   }
