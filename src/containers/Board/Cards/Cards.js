@@ -21,12 +21,12 @@ function getPlaceholderIndex(y, scrollY) {
 
 const specs = {
   drop(props, monitor, component) {
-    document.getElementById(monitor.getItem().item.card_id).style.display = 'block';
+    document.getElementById(monitor.getItem().card_id).style.display = 'block';
     const { placeholderIndex } = component.state;
     const lastX = monitor.getItem().x;
     const lastY = monitor.getItem().y;
     const nextX = props.x;
-    const idCard = monitor.getItem().item.card_id;
+    const idCard = monitor.getItem().card_id;
     let nextY = placeholderIndex;
 
     if (lastY > nextY) { // move top
@@ -38,7 +38,6 @@ const specs = {
     if (lastX === nextX && lastY === nextY) { // if position equel
       return;
     }
-    console.log(lastX, lastY, nextX, nextY, idCard);
     console.log(props);
     props.moveCard(lastX, lastY, nextX, nextY, idCard);
   },
@@ -74,7 +73,7 @@ const specs = {
 
     // when drag begins, we hide the card and only display cardDragPreview
     const item = monitor.getItem();
-    document.getElementById(item.item.card_id).style.display = 'none';
+    document.getElementById(item.card_id).style.display = 'none';
   }
 };
 
@@ -97,7 +96,7 @@ export default class Cards extends Component {
     startScrolling: PropTypes.func,
     stopScrolling: PropTypes.func,
     isScrolling: PropTypes.bool,
-    column_id: PropTypes.number
+    column_id: PropTypes.number.isRequired,
   };
 
   constructor(props) {

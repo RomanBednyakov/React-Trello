@@ -85,7 +85,6 @@ export default class CardsContainer extends Component {
   deleteColumn(event) {
     this.props.removeColumn(event.target.id, this.props.activeBoard);
   }
-
   render() {
     const { connectDropTarget, connectDragSource, item, x, moveCard, isDragging } = this.props;
     const opacity = isDragging ? 0.5 : 1;

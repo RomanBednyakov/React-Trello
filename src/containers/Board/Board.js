@@ -85,41 +85,39 @@ export default class Board extends Component {
   }
 
   moveCard(lastX, lastY, nextX, nextY, idCard) {
-    console.log(1111111);
+    console.log(111);
     this.props.moveCard(lastX, lastY, nextX, nextY, idCard);
-    const { lists } = this.props;
-    lists.map((listsItem, i) => {
-      if (i === nextX) {
-        listsItem.cards.map((item, index) => {
-          const newItem = item;
-          if (item.card_id === idCard) {
-            if (index === 0 && listsItem.cards[index + 1] === undefined) {
-              newItem.pos_card = 65535;
-            } else if (listsItem.cards[index + 1] === undefined) {
-              newItem.pos_card = listsItem.cards[index - 1].pos_card * 2;
-            } else if (index === 0 && listsItem.cards[index + 1] !== undefined) {
-              newItem.pos_card = listsItem.cards[index + 1].pos_card / 2;
-            } else {
-              newItem.pos_card =
-                (listsItem.cards[index - 1].pos_card + listsItem.cards[index + 1].pos_card) / 2;
-            }
-            newItem.column_id = listsItem.card_id;
-          }
-          return newItem;
-        });
-      }
-      return listsItem;
-    });
+    // const { lists } = this.props;
+    // lists.map((listsItem, i) => {
+    //   if (i === nextX) {
+    //     listsItem.cards.map((item, index) => {
+    //       const newItem = item;
+    //       if (item.card_id === idCard) {
+    //         if (index === 0 && listsItem.cards[index + 1] === undefined) {
+    //           newItem.pos_card = 65535;
+    //         } else if (listsItem.cards[index + 1] === undefined) {
+    //           newItem.pos_card = listsItem.cards[index - 1].pos_card * 2;
+    //         } else if (index === 0 && listsItem.cards[index + 1] !== undefined) {
+    //           newItem.pos_card = listsItem.cards[index + 1].pos_card / 2;
+    //         } else {
+    //           newItem.pos_card =
+    //             (listsItem.cards[index - 1].pos_card + listsItem.cards[index + 1].pos_card) / 2;
+    //         }
+    //         newItem.column_id = listsItem.card_id;
+    //       }
+    //       return newItem;
+    //     });
+    //   }
+    //   return listsItem;
+    // });
   }
 
   moveList(listId, nextX) {
-    console.log(222);
     const { lastX } = this.findList(listId, nextX);
     this.props.moveList(lastX, nextX);
   }
 
   findList(id, nextX) {
-    console.log(3333);
     const { lists } = this.props;
     const list = lists.filter(l => l.column_id === id)[0];
     if (nextX === 0) {

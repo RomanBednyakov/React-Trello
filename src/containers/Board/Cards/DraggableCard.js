@@ -16,17 +16,17 @@ const cardSource = {
   beginDrag(props, monitor, component) {
     // dispatch to redux store that drag is started
     const { item, x, y } = props;
-    const { id, title } = item;
+    const { card_id, title } = item;
     const { clientWidth, clientHeight } = findDOMNode(component);
 
-    return { id, title, item, x, y, clientWidth, clientHeight };
+    return { card_id, title, item, x, y, clientWidth, clientHeight };
   },
   endDrag(props, monitor) {
-    document.getElementById(monitor.getItem().item.card_id).style.display = 'block';
+    document.getElementById(monitor.getItem().card_id).style.display = 'block';
     props.stopScrolling();
   },
   isDragging(props, monitor) {
-    const isDragging = props.item && props.item.card_id === monitor.getItem().item.card_id;
+    const isDragging = props.item && props.item.card_id === monitor.getItem().card_id;
     return isDragging;
   }
 };
@@ -35,8 +35,7 @@ const cardSource = {
 const OPTIONS = {
   arePropsEqual: function arePropsEqual(props, otherProps) {
     let isEqual = true;
-    console.log(props);
-    if (props.item.id === otherProps.item.id &&
+    if (props.item.card_id === otherProps.item.card_id &&
         props.x === otherProps.x &&
         props.y === otherProps.y
        ) {

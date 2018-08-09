@@ -43,6 +43,7 @@ export function moveList(lastX, nextX) {
 }
 
 export function moveCard(lastX, lastY, nextX, nextY, idCard) {
+  console.log('moveCard');
   return (dispatch) => {
     dispatch({ type: MOVE_CARD, lastX, lastY, nextX, nextY, idCard });
   };
