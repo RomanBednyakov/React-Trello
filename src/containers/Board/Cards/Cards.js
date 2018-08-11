@@ -38,8 +38,7 @@ const specs = {
     if (lastX === nextX && lastY === nextY) { // if position equel
       return;
     }
-    console.log(props);
-    props.moveCard(lastX, lastY, nextX, nextY, idCard);
+    props.cardMove(lastX, lastY, nextX, nextY, idCard);
   },
   hover(props, monitor, component) {
     // defines where placeholder is rendered
@@ -87,7 +86,7 @@ const specs = {
 export default class Cards extends Component {
   static propTypes = {
     connectDropTarget: PropTypes.func.isRequired,
-    moveCard: PropTypes.func.isRequired,
+    cardMove: PropTypes.func.isRequired,
     cards: PropTypes.array.isRequired,
     x: PropTypes.number.isRequired,
     isOver: PropTypes.bool,
@@ -97,6 +96,7 @@ export default class Cards extends Component {
     stopScrolling: PropTypes.func,
     isScrolling: PropTypes.bool,
     column_id: PropTypes.number.isRequired,
+    activeBoard: PropTypes.string.isRequired || PropTypes.number.isRequired,
   };
 
   constructor(props) {
@@ -108,7 +108,7 @@ export default class Cards extends Component {
   }
 
   render() {
-    const { connectDropTarget, x, cards, isOver, canDrop } = this.props;
+    const { connectDropTarget, x, cards, isOver, canDrop, activeBoard} = this.props;
     const { placeholderIndex } = this.state;
     let isPlaceHold = false;
     let cardList = [];

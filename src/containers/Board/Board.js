@@ -11,11 +11,13 @@ import CustomDragLayer from './CustomDragLayer';
 import BoardForm from './BoardList/BoardForm';
 import BardList from './BoardList/BardList';
 import { Link, Redirect } from 'react-router-dom';
+import config from '../../config/config.dev';
 
 function mapStateToProps(state) {
   return {
     lists: state.lists.lists,
     activeBoard: state.lists.activeBoard,
+    redirectLogin: state.lists.redirectLogin,
   };
 }
 const logo = require('../../assets/images/trello-logo-blue.png');
@@ -29,15 +31,19 @@ export default class Board extends Component {
   static propTypes = {
     getLists: PropTypes.func.isRequired,
     homeRedirect: PropTypes.func.isRequired,
+    changePosColumn: PropTypes.func.isRequired,
+    changePosCard: PropTypes.func.isRequired,
     moveCard: PropTypes.func.isRequired,
     moveList: PropTypes.func.isRequired,
     lists: PropTypes.array.isRequired,
     activeBoard: PropTypes.string.isRequired || PropTypes.number.isRequired,
+    location: PropTypes.object.isRequired,
+    redirectLogin: PropTypes.bool.isRequired,
   };
 
   constructor(props) {
     super(props);
-    this.moveCard = this.moveCard.bind(this);
+    this.cardMove = this.cardMove.bind(this);
     this.moveList = this.moveList.bind(this);
     this.findList = this.findList.bind(this);
     this.scrollRight = this.scrollRight.bind(this);
@@ -45,9 +51,12 @@ export default class Board extends Component {
     this.stopScrolling = this.stopScrolling.bind(this);
     this.startScrolling = this.startScrolling.bind(this);
     this.changeRedirectState = this.changeRedirectState.bind(this);
+    this.shareFriend = this.shareFriend.bind(this);
+    this.handleMouseHover = this.handleMouseHover.bind(this);
     this.state = {
       isScrolling: false,
       isHovering: false,
+      shareValue: '',
     };
   }
 
@@ -84,32 +93,32 @@ export default class Board extends Component {
     this.setState({ isScrolling: false }, clearInterval(this.scrollInterval));
   }
 
-  moveCard(lastX, lastY, nextX, nextY, idCard) {
-    console.log(111);
+  cardMove(lastX, lastY, nextX, nextY, idCard) {
     this.props.moveCard(lastX, lastY, nextX, nextY, idCard);
-    // const { lists } = this.props;
-    // lists.map((listsItem, i) => {
-    //   if (i === nextX) {
-    //     listsItem.cards.map((item, index) => {
-    //       const newItem = item;
-    //       if (item.card_id === idCard) {
-    //         if (index === 0 && listsItem.cards[index + 1] === undefined) {
-    //           newItem.pos_card = 65535;
-    //         } else if (listsItem.cards[index + 1] === undefined) {
-    //           newItem.pos_card = listsItem.cards[index - 1].pos_card * 2;
-    //         } else if (index === 0 && listsItem.cards[index + 1] !== undefined) {
-    //           newItem.pos_card = listsItem.cards[index + 1].pos_card / 2;
-    //         } else {
-    //           newItem.pos_card =
-    //             (listsItem.cards[index - 1].pos_card + listsItem.cards[index + 1].pos_card) / 2;
-    //         }
-    //         newItem.column_id = listsItem.card_id;
-    //       }
-    //       return newItem;
-    //     });
-    //   }
-    //   return listsItem;
-    // });
+    const { lists } = this.props;
+    lists.map((listsItem, i) => {
+      if (i === nextX) {
+        listsItem.cards.map((item, index) => {
+          const newItem = item;
+          if (item.card_id === idCard) {
+            if (index === 0 && listsItem.cards[index + 1] === undefined) {
+              newItem.pos_card = 65535;
+            } else if (listsItem.cards[index + 1] === undefined) {
+              newItem.pos_card = listsItem.cards[index - 1].pos_card * 2;
+            } else if (index === 0 && listsItem.cards[index + 1] !== undefined) {
+              newItem.pos_card = listsItem.cards[index + 1].pos_card / 2;
+            } else {
+              newItem.pos_card =
+                (listsItem.cards[index - 1].pos_card + listsItem.cards[index + 1].pos_card) / 2;
+            }
+            newItem.column_id = listsItem.column_id;
+            this.props.changePosCard(newItem.card_id, newItem.pos_card, newItem.column_id);
+          }
+          return newItem;
+        });
+      }
+      return listsItem;
+    });
   }
 
   moveList(listId, nextX) {
@@ -127,6 +136,7 @@ export default class Board extends Component {
     } else {
       list.pos = (lists[nextX - 1].pos + lists[nextX].pos) / 2;
     }
+    this.props.changePosColumn(list.column_id, list.pos);
     return {
       list,
       lastX: lists.indexOf(list)
@@ -136,11 +146,23 @@ export default class Board extends Component {
     localStorage.removeItem('token');
     this.props.homeRedirect();
   }
+  shareFriend(e) {
+    const token = localStorage.getItem('token');
+    const url = new URL(`${config.shareUrl}/`);
+    url.search = new URLSearchParams(token);
+    this.setState({ shareValue: url });
+    e.target.select();
+  }
+  handleMouseHover() {
+    this.setState({ shareValue: '' });
+  }
 
   render() {
     const { lists, activeBoard } = this.props;
     const loginPage =
-      localStorage.getItem('token') === null || localStorage.getItem('token') === undefined
+      localStorage.getItem('token') === null
+      || localStorage.getItem('token') === undefined
+      || this.props.redirectLogin
         ? <Redirect to="/login" /> : null;
 
     const content = activeBoard ?
@@ -151,7 +173,7 @@ export default class Board extends Component {
             key={item.column_id}
             id={item.column_id}
             item={item}
-            moveCard={this.moveCard}
+            cardMove={this.cardMove}
             moveList={this.moveList}
             startScrolling={this.startScrolling}
             stopScrolling={this.stopScrolling}
@@ -161,6 +183,16 @@ export default class Board extends Component {
         )}
         <div className="add_column">
           <BoardForm add={'column'} position={65535} id={this.props.lists.length} />
+          <div className="board_list board_add_bg" >
+            <input
+              onClick={this.shareFriend}
+              onMouseLeave={this.handleMouseHover}
+              className="board_list_input button button_bg"
+              placeholder="+ share with friends..."
+              type="url"
+              value={this.state.shareValue}
+            />
+          </div>
         </div>
       </main>
       : null;

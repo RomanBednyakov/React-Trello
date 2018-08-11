@@ -1,15 +1,9 @@
-/* eslint-disable global-require */
 require('babel-polyfill');
-/* eslint-enable global-require */
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router, Route, Redirect, Switch } from 'react-router-dom';
-// import { Router, browserHistory } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
-// import { syncHistoryWithStore } from 'react-router-redux';
-
-// import { routes } from './routes';
 
 import configureStore from './store/configureStore';
 
@@ -19,9 +13,12 @@ import Login from './containers/login/login';
 import Registration from './containers/registration/registration';
 
 const store = configureStore();
-// const history = syncHistoryWithStore(browserHistory, store);
 const history = createBrowserHistory();
-
+if (history.location.pathname === '/share//') {
+  const url = String(history.location.search);
+  const token = url.match('%22(.*)%22');
+  localStorage.setItem('token', JSON.stringify(token[1]));
+}
 render(
   <Provider store={store}>
     <Router history={history}>

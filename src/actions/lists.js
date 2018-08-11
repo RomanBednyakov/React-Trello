@@ -13,26 +13,20 @@ export const REDIRECT_HOME = 'REDIRECT_HOME';
 export const REDIRECT_LOGIN = 'REDIRECT_LOGIN';
 export const ERROR_LOGIN = 'ERROR_LOGIN';
 
-function compareAge(posA, posB) {
-  return posA.pos - posB.pos;
-}
-
 export function getLists(idBoard) {
   const data = { idBoard };
-  let lists = [];
   const url = new URL(`${config.hrefUrl}/columns`);
   url.search = new URLSearchParams(data);
   return (dispatch) => {
     return api.get(url)
       .then(help.checkStatus)
       .then((response) => {
-        lists = response.data.columns;
-        lists.sort(compareAge);
-        lists.map((item) => item.cards.sort(compareAge));
-        dispatch({ type: GET_LISTS, lists, isFetching: true, activeBoard: idBoard });
+        help.addNewLists(dispatch, response, idBoard);
       })
       .then(dispatch({ type: GET_LISTS_START, isFetching: false }))
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
 
@@ -43,7 +37,6 @@ export function moveList(lastX, nextX) {
 }
 
 export function moveCard(lastX, lastY, nextX, nextY, idCard) {
-  console.log('moveCard');
   return (dispatch) => {
     dispatch({ type: MOVE_CARD, lastX, lastY, nextX, nextY, idCard });
   };
@@ -68,7 +61,7 @@ export function logining(login, password) {
     return api.get(url)
       .then(help.checkStatus)
       .then(help.saveToken)
-      .then(() => dispatch({ type: REDIRECT_HOME, redirectHome: true }))
+      .then(() => dispatch({ type: REDIRECT_HOME, redirectHome: true, redirectLogin: false }))
       .catch(() => dispatch({ type: ERROR_LOGIN, errorLogin: true }));
   };
 }
@@ -79,12 +72,13 @@ export function registration(login, password) {
     password,
   };
   localStorage.removeItem('token');
-  // config.token = null;
   return (dispatch) => {
     return api.post(`${config.hrefUrl}/auth`, data)
       .then(help.checkStatus)
       .then(() => dispatch({ type: REDIRECT_LOGIN, redirectLogin: true }))
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
 export function addBoard(title) {
@@ -95,7 +89,9 @@ export function addBoard(title) {
     return api.post(`${config.hrefUrl}/boards/`, data)
       .then(help.checkStatus)
       .then((response) => dispatch({ type: GET_BOARDS, boards: response.data.boards }))
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
 export function getBoards() {
@@ -103,7 +99,9 @@ export function getBoards() {
     return api.get(`${config.hrefUrl}/boards/`)
       .then(help.checkStatus)
       .then((response) => dispatch({ type: GET_BOARDS, boards: response.data.boards }))
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
 export function removeBoard(id, activeBoard) {
@@ -116,7 +114,9 @@ export function removeBoard(id, activeBoard) {
       .then(help.checkStatus)
       .then((response) =>
         dispatch({ type: DELETE_BOARDS, boards: response.data.boards, activeBoard: active }))
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
 
@@ -126,17 +126,44 @@ export function addColumn(title, idBoard, pos) {
     idBoard,
     pos
   };
-  let lists = [];
   return (dispatch) => {
     return api.post(`${config.hrefUrl}/columns/`, data)
       .then(help.checkStatus)
       .then((response) => {
-        lists = response.data.columns;
-        lists.sort(compareAge);
-        lists.map((item) => item.cards.sort(compareAge));
-        dispatch({ type: GET_LISTS, lists, isFetching: true, activeBoard: idBoard });
+        help.addNewLists(dispatch, response, idBoard);
       })
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
+  };
+}
+export function removeColumn(coulmnId, idBoard) {
+  const data = {
+    coulmnId,
+    idBoard,
+  };
+  return (dispatch) => {
+    return api.delete(`${config.hrefUrl}/columns/`, data)
+      .then(help.checkStatus)
+      .then((response) => {
+        help.addNewLists(dispatch, response, idBoard);
+      })
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
+  };
+}
+export function changePosColumn(columnsId, pos) {
+  const data = {
+    columnsId,
+    pos,
+  };
+  return (dispatch) => {
+    return api.put(`${config.hrefUrl}/columns/`, data)
+      .then(help.checkStatus)
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
 export function addCard(title, idBoard, content, pos, idColumn) {
@@ -147,39 +174,47 @@ export function addCard(title, idBoard, content, pos, idColumn) {
     content,
     idColumn
   };
-  let lists = [];
   return (dispatch) => {
     return api.post(`${config.hrefUrl}/columns/card`, data)
       .then(help.checkStatus)
       .then((response) => {
-        lists = response.data.columns;
-        lists.sort(compareAge);
-        lists.map((item) => item.cards.sort(compareAge));
-        dispatch({ type: GET_LISTS, lists, isFetching: true, activeBoard: idBoard });
+        help.addNewLists(dispatch, response, idBoard);
       })
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
-
-export function removeColumn(coulmnId, idBoard) {
+export function removeCard(cardId, idBoard) {
   const data = {
-    coulmnId,
+    cardId,
     idBoard,
   };
-  let lists = [];
   return (dispatch) => {
-    return api.delete(`${config.hrefUrl}/columns/`, data)
+    return api.delete(`${config.hrefUrl}/columns/card`, data)
       .then(help.checkStatus)
       .then((response) => {
-        lists = response.data.columns;
-        lists.sort(compareAge);
-        lists.map((item) => item.cards.sort(compareAge));
-        dispatch({ type: GET_LISTS, lists, isFetching: true, activeBoard: idBoard });
+        help.addNewLists(dispatch, response, idBoard);
       })
-      .catch((error) => { console.log('error', error); });
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
   };
 }
-
+export function changePosCard(cardId, pos, columnId) {
+  const data = {
+    cardId,
+    pos,
+    columnId
+  };
+  return (dispatch) => {
+    return api.put(`${config.hrefUrl}/columns/card`, data)
+      .then(help.checkStatus)
+      .catch((error) => {
+        help.errorMessage(dispatch, error);
+      });
+  };
+}
 export function loginRedirect() {
   return (dispatch) => {
     dispatch({ type: REDIRECT_LOGIN, redirectLogin: false });

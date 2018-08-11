@@ -25,6 +25,16 @@ ApiRequest.prototype = {
       data: JSON.stringify(data),
     });
   },
+  put: (url, data) => {
+    return axios({
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      url,
+      data: JSON.stringify(data),
+    });
+  },
   delete: (url, data) => {
     return axios({
       method: 'delete',

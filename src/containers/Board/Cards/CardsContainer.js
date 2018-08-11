@@ -68,7 +68,7 @@ export default class CardsContainer extends Component {
     removeColumn: PropTypes.func.isRequired,
     item: PropTypes.object,
     x: PropTypes.number,
-    moveCard: PropTypes.func.isRequired,
+    cardMove: PropTypes.func.isRequired,
     moveList: PropTypes.func.isRequired,
     isDragging: PropTypes.bool,
     startScrolling: PropTypes.func,
@@ -86,7 +86,7 @@ export default class CardsContainer extends Component {
     this.props.removeColumn(event.target.id, this.props.activeBoard);
   }
   render() {
-    const { connectDropTarget, connectDragSource, item, x, moveCard, isDragging } = this.props;
+    const { connectDropTarget, connectDragSource, item, x, cardMove, isDragging } = this.props;
     const opacity = isDragging ? 0.5 : 1;
 
     return connectDragSource(connectDropTarget(
@@ -100,7 +100,7 @@ export default class CardsContainer extends Component {
           />
         </div>
         <Cards
-          moveCard={moveCard}
+          cardMove={cardMove}
           x={x}
           column_id={item.column_id}
           cards={item.cards}

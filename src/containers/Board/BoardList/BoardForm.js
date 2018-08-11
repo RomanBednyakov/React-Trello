@@ -24,7 +24,7 @@ export default class BoardForm extends Component {
     add: PropTypes.string.isRequired,
     lists: PropTypes.array.isRequired,
     position: PropTypes.number.isRequired,
-    activeBoard: PropTypes.string.isRequired,
+    activeBoard: PropTypes.string.isRequired || PropTypes.number.isRequired,
     id: PropTypes.number.isRequired,
   };
   constructor(props) {
