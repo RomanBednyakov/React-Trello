@@ -3,7 +3,6 @@ import { createStore, applyMiddleware, compose } from 'redux';
 /* eslint-enable global-require, react/jsx-first-prop-new-line */
 import thunk from 'redux-thunk';
 import { routerMiddleware } from 'react-router-redux';
-// import { browserHistory } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import rootReducer from '../reducers';

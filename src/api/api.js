@@ -1,5 +1,4 @@
 import axios from 'axios';
-// import configs from '../config/index';
 
 axios.interceptors.request.use((config) => {
   const newConfig = config;

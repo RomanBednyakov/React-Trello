@@ -3,4 +3,5 @@ module.exports = {
   hrefUrl: 'http://localhost:3000',
   shareUrl: 'http://localhost:8080/share/',
   token: localStorage.getItem('token'),
+  startingPosition: 65535
 };

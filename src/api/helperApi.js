@@ -1,5 +1,3 @@
-// import config from '../config/index';
-
 import { GET_LISTS, REDIRECT_HOME, REDIRECT_LOGIN } from '../actions/lists';
 
 function compareAge(posA, posB) {
@@ -27,6 +25,7 @@ class Help {
     lists.map((item) => item.cards.sort(compareAge));
     dispatch({ type: GET_LISTS, lists, isFetching: true, activeBoard: idBoard });
   };
+
   errorMessage = (dispatch, error) => {
     if (error.response.data.message === 'token not verify') {
       dispatch({ type: REDIRECT_HOME, redirectHome: false });

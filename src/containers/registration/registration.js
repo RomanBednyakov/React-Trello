@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
@@ -27,7 +26,6 @@ export default class Registration extends Component {
     this.state = {
       login: '',
       password: '',
-      // redirect: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
@@ -47,25 +45,34 @@ export default class Registration extends Component {
   render() {
     const loginPage = this.props.redirectLogin ? <Redirect to="/login" /> : null;
     return (
-      <div>
-        <h1>Registration</h1>
-        <form className="signIn-form">
-          <input
-            name="login"
-            type="text"
-            placeholder="login"
-            onChange={this.handleLogin}
-          />
-          <input
-            name="pass"
-            type="text"
-            placeholder="password"
-            onChange={this.handlePassword}
-          />
-          <button onClick={this.handleSubmit}>registration</button>
-        </form>
-        {loginPage}
-        <h3><Link href="../Login/index.js" to="/login">Go to login</Link></h3>
+      <div className="form">
+        <div className="form_content">
+          <h1 className="form_title">Create a Trello Account</h1>
+          <form className="signIn-form">
+            <input
+              name="login"
+              type="text"
+              placeholder="username"
+              className="form_input"
+              onChange={this.handleLogin}
+            />
+            <input
+              name="pass"
+              type="text"
+              placeholder="password"
+              className="form_input"
+              onChange={this.handlePassword}
+            />
+            <a className="button form_Button" onClick={this.handleSubmit}>Create New Account</a>
+          </form>
+          {loginPage}
+          <h3>
+            <Link
+              className="button"
+              href="../login/login.js" to="/login"
+            >sign in to your account</Link>
+          </h3>
+        </div>
       </div>
     );
   }

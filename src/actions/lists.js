@@ -1,6 +1,6 @@
 import config from '../config/config.dev';
 import api from '../api/api';
-import help from '../api/helperAuth';
+import help from '../api/helperApi';
 
 export const GET_LISTS_START = 'GET_LISTS_START';
 export const GET_LISTS = 'GET_LISTS';
@@ -57,12 +57,12 @@ export function logining(login, password) {
   url.search = new URLSearchParams(userData);
   return (dispatch) => {
     localStorage.removeItem('token');
-    // config.token = null;
     return api.get(url)
       .then(help.checkStatus)
       .then(help.saveToken)
-      .then(() => dispatch({ type: REDIRECT_HOME, redirectHome: true, redirectLogin: false }))
-      .catch(() => dispatch({ type: ERROR_LOGIN, errorLogin: true }));
+      .then(() => dispatch({ type: REDIRECT_LOGIN, redirectLogin: false }))
+      .then(() => dispatch({ type: REDIRECT_HOME, redirectHome: true }))
+      .catch((error) => console.log(error));
   };
 }
 

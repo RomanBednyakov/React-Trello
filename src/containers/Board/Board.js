@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import Clipboard from 'react-clipboard.js';
 
 import * as ListsActions from '../../actions/lists';
 
@@ -39,6 +40,7 @@ export default class Board extends Component {
     activeBoard: PropTypes.string.isRequired || PropTypes.number.isRequired,
     location: PropTypes.object.isRequired,
     redirectLogin: PropTypes.bool.isRequired,
+    shareValue: PropTypes.string,
   };
 
   constructor(props) {
@@ -146,19 +148,19 @@ export default class Board extends Component {
     localStorage.removeItem('token');
     this.props.homeRedirect();
   }
-  shareFriend(e) {
+  shareFriend() {
     const token = localStorage.getItem('token');
     const url = new URL(`${config.shareUrl}/`);
     url.search = new URLSearchParams(token);
-    this.setState({ shareValue: url });
-    e.target.select();
+    this.setState({ shareValue: url.href });
   }
   handleMouseHover() {
-    this.setState({ shareValue: '' });
+    this.setState({ shareValue: '+ share with friends...' });
   }
 
   render() {
     const { lists, activeBoard } = this.props;
+    const shareText = this.state.shareValue ? this.state.shareValue : '+ share with friends...';
     const loginPage =
       localStorage.getItem('token') === null
       || localStorage.getItem('token') === undefined
@@ -182,16 +184,22 @@ export default class Board extends Component {
           />
         )}
         <div className="add_column">
-          <BoardForm add={'column'} position={65535} id={this.props.lists.length} />
-          <div className="board_list board_add_bg" >
-            <input
+          <BoardForm
+            add={'column'}
+            position={config.startingPosition} id={this.props.lists.length}
+          />
+          <div
+            className="board_list board_add_bg board_share"
+            onMouseEnter={this.shareFriend} onMouseLeave={this.handleMouseHover}
+          >
+            <div className="board_list_input button button_bg">{shareText}</div>
+            <Clipboard
               onClick={this.shareFriend}
-              onMouseLeave={this.handleMouseHover}
-              className="board_list_input button button_bg"
-              placeholder="+ share with friends..."
-              type="url"
-              value={this.state.shareValue}
-            />
+              className="board_list_Clipboard"
+              data-clipboard-text={this.state.shareValue}
+            >
+              copy
+            </Clipboard>
           </div>
         </div>
       </main>
