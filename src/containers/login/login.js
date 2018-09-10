@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect, Link } from 'react-router-dom';
+import { GoogleLogin } from 'react-google-login';
 
 import * as ListsActions from '../../actions/lists';
 
@@ -50,6 +51,13 @@ export default class Login extends Component {
   }
 
   render() {
+    const responseGoogle = (response) => {
+      if (response.error) {
+        console.log('@', response.error);
+      } else {
+        console.log('@',response);
+      }
+    };
     const homePage = this.props.redirectHome ? <Redirect to="/home" /> : null;
     return (
       <div className="form">
@@ -82,6 +90,12 @@ export default class Login extends Component {
               Create an account
             </Link>
           </h3>
+          <GoogleLogin
+            clientId="931322119991-45u3hmvqaqs9tmr6mqmppgeo2e8gfctd.apps.googleusercontent.com"
+            buttonText="Login with Google"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+          />
           {this.props.errorLogin ? <div className="form_error">Wrong login or password</div> : ''}
         </div>
       </div>
